@@ -19,6 +19,18 @@ public class BoletimController {
     @Autowired
     private BoletimRepository repository;
 
+
+    @GetMapping("/{id}")
+    public ResponseEntity getUm(@PathVariable("id") Long id, @RequestHeader("token") String token) {
+        Boletim boletim = repository.findByIdAndToken(id, token);
+
+        if (boletim != null) {
+            return ResponseEntity.ok(boletim);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping
     public ResponseEntity getVarios(
             @RequestParam(value = "aluno", required = false) String aluno,
@@ -40,23 +52,15 @@ public class BoletimController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity getUm(@PathVariable("id") Long id, @RequestHeader("token") String token) {
-        Boletim boletim = repository.findByIdAndToken(id, token);
-
-        if (boletim != null) {
-            return ResponseEntity.ok(boletim);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-
     @PostMapping
     public ResponseEntity criar(@RequestBody Boletim boletim, @RequestHeader("token") String token) {
         boletim.setToken(token);
-        repository.save(boletim);
-        return ResponseEntity.status(HttpStatus.CREATED).body(boletim);
+        try {
+            repository.save(boletim);
+            return ResponseEntity.status(HttpStatus.CREATED).body(boletim);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

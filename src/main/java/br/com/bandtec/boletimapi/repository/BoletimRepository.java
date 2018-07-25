@@ -10,8 +10,6 @@ import java.util.List;
  */
 public interface BoletimRepository extends JpaRepository<Boletim, Long> {
 
-    List<Boletim> findByAlunoLikeOrderByAluno(String aluno);
-
     boolean existsByIdAndToken(Long id, String token);
 
     List<Boletim> findByTokenOrderByAluno(String token);
